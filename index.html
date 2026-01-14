@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Props Lab</title>
+    <title>NBA Props Lab v3</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -11,224 +11,336 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            background: #0a0a0f;
             color: #e2e8f0;
-            min-height: 100vh;
+            line-height: 1.5;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+        
+        /* Header */
         .header {
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
-            padding: 16px 0;
+            background: rgba(15, 15, 25, 0.95);
+            border-bottom: 1px solid #1e293b;
+            padding: 12px 0;
             position: sticky;
             top: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
         }
-        .header-content { display: flex; align-items: center; justify-content: space-between; }
-        .logo { display: flex; align-items: center; gap: 12px; }
-        .logo-icon {
-            width: 44px; height: 44px;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px;
-        }
-        .logo-text h1 {
-            font-size: 20px; font-weight: 700;
-            background: linear-gradient(90deg, #06b6d4, #8b5cf6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .logo-text p { font-size: 11px; color: #64748b; }
+        .header-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { font-size: 28px; }
+        .logo h1 { font-size: 18px; font-weight: 700; color: #06b6d4; }
+        .logo p { font-size: 11px; color: #64748b; }
         .live-badge {
-            display: flex; align-items: center; gap: 8px;
-            padding: 6px 12px; border-radius: 8px;
-            background: rgba(16, 185, 129, 0.1);
+            display: flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: 6px;
+            background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.3);
+            font-size: 11px; color: #10b981; font-weight: 600;
         }
-        .live-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .live-text { font-size: 12px; color: #10b981; font-weight: 600; }
+        .live-dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         
-        .games-section { margin: 24px 0; }
-        .section-title { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-        .games-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+        /* Games Row */
+        .games-section { padding: 16px 0; border-bottom: 1px solid #1e293b; }
+        .games-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
         .game-card {
             flex-shrink: 0;
-            padding: 16px 20px;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(51, 65, 85, 0.5);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .game-card:hover { border-color: rgba(51, 65, 85, 0.8); }
-        .game-card.selected { background: rgba(30, 41, 59, 0.8); border-color: rgba(6, 182, 212, 0.5); }
-        .game-teams { display: flex; align-items: center; gap: 16px; }
-        .game-team { font-size: 18px; font-weight: 700; }
-        .game-at { color: #475569; }
-        .game-time { font-size: 11px; color: #64748b; margin-top: 8px; }
-        
-        .search-box {
-            width: 100%;
             padding: 12px 16px;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(51, 65, 85, 0.5);
+            background: #12121a;
+            border: 1px solid #1e293b;
             border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            min-width: 120px;
+            text-align: center;
+        }
+        .game-card:hover { border-color: #334155; }
+        .game-card.selected { background: #1a1a2e; border-color: #06b6d4; }
+        .game-teams { font-size: 15px; font-weight: 700; }
+        .game-at { color: #475569; margin: 0 6px; }
+        .game-time { font-size: 11px; color: #64748b; margin-top: 4px; }
+        
+        /* Search & Filters */
+        .controls { padding: 16px 0; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .search-box {
+            flex: 1; min-width: 200px;
+            padding: 10px 14px;
+            background: #12121a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
             color: #e2e8f0;
             font-size: 14px;
-            margin-bottom: 20px;
         }
-        .search-box:focus { outline: none; border-color: rgba(6, 182, 212, 0.5); }
-        .search-box::placeholder { color: #64748b; }
-        
-        .matchup-header {
-            padding: 24px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
-            border: 1px solid rgba(51, 65, 85, 0.3);
-            border-radius: 16px;
-            text-align: center;
-            margin-bottom: 24px;
+        .search-box:focus { outline: none; border-color: #06b6d4; }
+        .search-box::placeholder { color: #475569; }
+        .filter-btn {
+            padding: 10px 16px;
+            background: #12121a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 13px;
+            cursor: pointer;
         }
-        .matchup-teams { display: flex; align-items: center; justify-content: center; gap: 32px; }
-        .matchup-team-name { font-size: 28px; font-weight: 800; }
-        .matchup-team-city { font-size: 11px; color: #64748b; margin-top: 4px; }
-        .matchup-vs { font-size: 24px; color: #475569; }
-        .matchup-time { font-size: 11px; color: #64748b; margin-top: 4px; }
+        .filter-btn:hover { border-color: #334155; }
+        .filter-btn.active { background: #1e293b; color: #06b6d4; border-color: #06b6d4; }
         
+        /* Player Card */
         .player-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(51, 65, 85, 0.5);
+            background: #12121a;
+            border: 1px solid #1e293b;
             border-radius: 12px;
             margin-bottom: 12px;
             overflow: hidden;
-            transition: all 0.2s;
         }
-        .player-card.has-edge {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.7));
-            border-color: rgba(6, 182, 212, 0.3);
-        }
+        .player-card.hot { border-color: rgba(34, 197, 94, 0.4); }
+        .player-card.cold { border-color: rgba(239, 68, 68, 0.4); }
+        
         .player-header {
-            padding: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
             cursor: pointer;
-            display: flex;
             flex-wrap: wrap;
-            align-items: center;
-            gap: 16px;
         }
-        .player-info { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+        .player-header:hover { background: rgba(30, 41, 59, 0.3); }
+        
+        .player-info { display: flex; align-items: center; gap: 12px; min-width: 180px; }
         .player-avatar {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 16px;
-        }
-        .player-name { font-weight: 700; font-size: 16px; }
-        .player-team { font-size: 13px; }
-        .player-stats { display: flex; gap: 8px; }
-        .stat-box {
-            padding: 6px 12px;
-            background: rgba(51, 65, 85, 0.4);
-            border-radius: 8px;
-            text-align: center;
-            min-width: 50px;
-        }
-        .stat-label { font-size: 10px; color: #64748b; }
-        .stat-value { font-weight: 700; font-size: 14px; }
-        .edge-badge {
-            margin-left: auto;
-            padding: 10px 16px;
+            width: 44px; height: 44px;
             border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+        }
+        .player-name { font-weight: 600; font-size: 15px; }
+        .player-team { font-size: 12px; color: #64748b; }
+        
+        .quick-stats { display: flex; gap: 6px; flex-wrap: wrap; }
+        .quick-stat {
+            padding: 6px 10px;
+            background: #1a1a2e;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 52px;
+        }
+        .quick-stat-label { font-size: 9px; color: #64748b; text-transform: uppercase; }
+        .quick-stat-value { font-size: 14px; font-weight: 700; }
+        
+        .trend-badge {
+            margin-left: auto;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .trend-badge.hot { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .trend-badge.cold { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .trend-badge.stable { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
+        
+        .expand-btn { padding: 8px; color: #64748b; font-size: 16px; }
+        
+        /* Player Details */
+        .player-details {
+            border-top: 1px solid #1e293b;
+            background: #0d0d14;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #1e293b;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+        .tab:hover { color: #94a3b8; }
+        .tab.active { color: #06b6d4; border-bottom-color: #06b6d4; }
+        
+        /* Game Log Table */
+        .game-log-section { padding: 16px; }
+        .section-title { 
+            font-size: 12px; 
+            color: #64748b; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
+            gap: 8px;
+        }
+        
+        .game-log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .game-log-table th {
+            text-align: left;
+            padding: 10px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1e293b;
+            white-space: nowrap;
+        }
+        .game-log-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+        }
+        .game-log-table tr:hover { background: rgba(30, 41, 59, 0.3); }
+        .game-log-table .date { color: #64748b; font-size: 11px; }
+        .game-log-table .matchup { font-weight: 500; }
+        .game-log-table .win { color: #22c55e; }
+        .game-log-table .loss { color: #ef4444; }
+        .game-log-table .highlight { background: rgba(6, 182, 212, 0.1); font-weight: 600; }
+        .game-log-table .above { color: #22c55e; }
+        .game-log-table .below { color: #ef4444; }
+        
+        /* Averages Comparison */
+        .averages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
-        }
-        .edge-badge.over { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); }
-        .edge-badge.under { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); }
-        .edge-type { font-size: 11px; color: #94a3b8; }
-        .edge-pick { font-weight: 700; font-size: 15px; }
-        .edge-pick.over { color: #10b981; }
-        .edge-pick.under { color: #ef4444; }
-        .edge-conf-label { font-size: 11px; color: #94a3b8; }
-        .edge-conf-value { font-weight: 700; }
-        .expand-btn { padding: 8px; color: #64748b; font-size: 18px; }
-        
-        .player-details {
             padding: 16px;
-            border-top: 1px solid rgba(51, 65, 85, 0.5);
-            background: rgba(15, 23, 42, 0.3);
         }
-        .details-section { margin-bottom: 20px; }
-        .details-title { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-        .props-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-        .prop-card {
-            padding: 12px;
+        .avg-card {
+            background: #1a1a2e;
             border-radius: 10px;
-            border: 1px solid rgba(51, 65, 85, 0.5);
-            background: rgba(30, 41, 59, 0.3);
+            padding: 16px;
         }
-        .prop-card.has-edge-over { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3); }
-        .prop-card.has-edge-under { background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.3); }
-        .prop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .prop-label { font-size: 13px; color: #94a3b8; }
-        .prop-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
-        .prop-badge.over { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .prop-badge.under { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .prop-line { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .prop-conf-bar { height: 6px; background: rgba(51, 65, 85, 0.5); border-radius: 3px; margin-bottom: 4px; }
-        .prop-conf-fill { height: 100%; border-radius: 3px; }
-        .prop-conf-fill.over { background: #10b981; }
-        .prop-conf-fill.under { background: #ef4444; }
-        .prop-conf-text { font-size: 11px; color: #64748b; text-align: right; }
-        .prop-reason { font-size: 11px; color: #64748b; margin-top: 6px; }
+        .avg-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+        .avg-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+        }
+        .avg-row:last-child { border-bottom: none; }
+        .avg-stat { font-size: 13px; color: #94a3b8; }
+        .avg-values { display: flex; gap: 16px; font-size: 13px; }
+        .avg-val { min-width: 45px; text-align: right; }
+        .avg-val.season { color: #64748b; }
+        .avg-val.l10 { color: #94a3b8; }
+        .avg-val.l5 { color: #e2e8f0; font-weight: 600; }
         
-        .tracking-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-        .tracking-box {
-            padding: 12px;
-            background: rgba(30, 41, 59, 0.3);
-            border: 1px solid rgba(51, 65, 85, 0.3);
+        /* Hit Rates */
+        .hit-rates-section { padding: 16px; }
+        .hit-rates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .hit-rate-card {
+            background: #1a1a2e;
             border-radius: 8px;
+            padding: 14px;
         }
-        .tracking-box.highlight { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); }
-        .tracking-label { font-size: 10px; color: #64748b; margin-bottom: 4px; }
-        .tracking-value { font-size: 18px; font-weight: 700; }
+        .hit-rate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .hit-rate-stat { font-weight: 600; font-size: 14px; }
+        .hit-rate-line { font-size: 12px; color: #64748b; }
+        .hit-rate-bar {
+            height: 8px;
+            background: #ef4444;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .hit-rate-fill { height: 100%; background: #22c55e; }
+        .hit-rate-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+        }
+        .hit-rate-over { color: #22c55e; }
+        .hit-rate-under { color: #ef4444; }
         
+        /* Trend Analysis */
+        .trends-section { padding: 16px; }
+        .trends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .trend-card {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .trend-card.hot { border-left: 3px solid #22c55e; }
+        .trend-card.cold { border-left: 3px solid #ef4444; }
+        .trend-card.stable { border-left: 3px solid #64748b; }
+        .trend-stat { font-weight: 600; margin-bottom: 6px; }
+        .trend-note { font-size: 12px; color: #94a3b8; }
+        .trend-range { font-size: 11px; color: #64748b; margin-top: 8px; }
+        
+        /* Loading & Error */
         .loader {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 60vh;
         }
         .spinner {
-            width: 48px; height: 48px;
-            border: 4px solid rgba(6, 182, 212, 0.2);
+            width: 40px; height: 40px;
+            border: 3px solid rgba(6, 182, 212, 0.2);
             border-top-color: #06b6d4;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loader-text { margin-top: 16px; color: #64748b; }
+        .loader-text { margin-top: 16px; color: #64748b; font-size: 14px; }
         
         .error { text-align: center; padding: 48px; }
-        .error-title { color: #ef4444; font-size: 20px; margin-bottom: 8px; }
-        .error-msg { color: #64748b; margin-bottom: 16px; }
+        .error-title { color: #ef4444; font-size: 18px; margin-bottom: 8px; }
         .retry-btn {
+            margin-top: 16px;
             padding: 10px 20px;
             background: rgba(6, 182, 212, 0.2);
             border: 1px solid rgba(6, 182, 212, 0.3);
             color: #06b6d4;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 14px;
         }
         
+        .no-games { text-align: center; padding: 48px; color: #64748b; }
+        
         .footer {
-            border-top: 1px solid rgba(51, 65, 85, 0.5);
+            border-top: 1px solid #1e293b;
             padding: 16px 0;
-            margin-top: 48px;
+            margin-top: 32px;
             text-align: center;
             font-size: 11px;
             color: #475569;
         }
         
-        .no-games { text-align: center; padding: 48px; color: #64748b; }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-log-table { font-size: 11px; }
+            .game-log-table th, .game-log-table td { padding: 8px 4px; }
+            .player-header { padding: 12px; }
+            .quick-stats { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -262,7 +374,7 @@
             1610612752: { abbr: 'NYK', name: 'Knicks', color: '#006BB6' },
             1610612760: { abbr: 'OKC', name: 'Thunder', color: '#007AC1' },
             1610612753: { abbr: 'ORL', name: 'Magic', color: '#0077C0' },
-            1610612755: { abbr: 'PHI', name: 'Sixers', color: '#006BB6' },
+            1610612755: { abbr: 'PHI', name: '76ers', color: '#006BB6' },
             1610612756: { abbr: 'PHX', name: 'Suns', color: '#1D1160' },
             1610612757: { abbr: 'POR', name: 'Blazers', color: '#E03A3E' },
             1610612758: { abbr: 'SAC', name: 'Kings', color: '#5A2D81' },
@@ -271,101 +383,266 @@
             1610612762: { abbr: 'UTA', name: 'Jazz', color: '#002B5C' },
             1610612764: { abbr: 'WAS', name: 'Wizards', color: '#002B5C' },
         };
+
+        // Calculate hit rates from game log
+        function calcHitRates(games, stat) {
+            if (!games || games.length < 5) return [];
+            const values = games.map(g => g[stat]);
+            const avg = values.reduce((a,b) => a+b, 0) / values.length;
+            
+            // Common prop lines
+            const lines = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 12.5, 14.5, 15.5, 17.5, 19.5, 20.5, 22.5, 24.5, 25.5, 27.5, 29.5];
+            
+            // Find relevant lines (around the average)
+            const relevantLines = lines.filter(l => Math.abs(l - avg) <= avg * 0.5 || (l <= avg + 3 && l >= avg - 3));
+            
+            return relevantLines.slice(0, 4).map(line => {
+                const over = values.filter(v => v > line).length;
+                return {
+                    line,
+                    over,
+                    under: values.length - over,
+                    pct: Math.round((over / values.length) * 100),
+                    total: values.length
+                };
+            });
+        }
         
-        const calcEdge = (p, type) => {
-            const t = p.tracking || {};
-            const props = p.props || {};
-            const s = p.stats || {};
-            const l5 = p.last5 || [];
-            const prop = props[type];
-            if (!prop) return { value: 0, confidence: 0, direction: 'neutral', reasons: [] };
+        // Determine best trend from player data
+        function getBestTrend(player) {
+            const trends = player.trends || {};
+            let best = { stat: null, trend: 'stable', diff: 0 };
             
-            let e = { value: 0, confidence: 0, direction: 'neutral', reasons: [] };
-            
-            if (type === 'pts') {
-                const avg = l5.length ? l5.reduce((a,b) => a + (b.pts||0), 0) / l5.length : s.pts;
-                const diff = avg - prop.line;
-                if (diff > 1.5) { e.value = 2; e.direction = 'over'; e.reasons.push(`Hot: ${avg.toFixed(1)} vs ${prop.line}`); }
-                else if (diff < -1.5) { e.value = -1.5; e.direction = 'under'; e.reasons.push(`Cold: ${avg.toFixed(1)} vs ${prop.line}`); }
-                e.confidence = Math.min(Math.abs(e.value) * 12, 75);
+            for (const [stat, data] of Object.entries(trends)) {
+                if (!data) continue;
+                if (data.trend === 'hot' || data.trend === 'cold') {
+                    const diff = Math.abs(data.avg_l3 - data.avg_l10) / data.avg_l10;
+                    if (diff > best.diff) {
+                        best = { stat, trend: data.trend, diff, note: data.note };
+                    }
+                }
             }
-            if (type === 'reb') {
-                const avg = l5.length ? l5.reduce((a,b) => a + (b.reb||0), 0) / l5.length : s.reb;
-                const diff = avg - prop.line;
-                if (diff > 0.5) { e.value = 1.5; e.direction = 'over'; e.reasons.push(`L5: ${avg.toFixed(1)} > ${prop.line}`); }
-                else if (diff < -0.5) { e.value = -1.5; e.direction = 'under'; e.reasons.push(`L5: ${avg.toFixed(1)} < ${prop.line}`); }
-                e.confidence = Math.min(Math.abs(e.value) * 15, 80);
-            }
-            if (type === 'ast') {
-                const avg = l5.length ? l5.reduce((a,b) => a + (b.ast||0), 0) / l5.length : s.ast;
-                const diff = avg - prop.line;
-                if (diff > 0.5) { e.value = 1.5; e.direction = 'over'; e.reasons.push(`L5: ${avg.toFixed(1)} > ${prop.line}`); }
-                else if (diff < -0.5) { e.value = -1.5; e.direction = 'under'; e.reasons.push(`L5: ${avg.toFixed(1)} < ${prop.line}`); }
-                e.confidence = Math.min(Math.abs(e.value) * 15, 85);
-            }
-            if (type === 'threes') {
-                const pct = s.fg3_pct || 0.33;
-                if (pct > 0.40) { e.value = 1.5; e.direction = 'over'; e.reasons.push(`Elite: ${(pct*100).toFixed(1)}%`); }
-                else if (pct < 0.32) { e.value = -1; e.direction = 'under'; }
-                e.confidence = Math.min(Math.abs(e.value) * 18, 70);
-            }
-            
-            if (e.value > 0 && e.direction === 'neutral') e.direction = 'over';
-            if (e.value < 0 && e.direction === 'neutral') e.direction = 'under';
-            return e;
-        };
+            return best;
+        }
         
-        function PlayerCard({ player, expanded, toggle }) {
-            const team = TEAMS[player.team] || {};
-            const s = player.stats || {};
-            const t = player.tracking || {};
+        function GameLogTable({ games, highlightStat }) {
+            if (!games || games.length === 0) return <p style={{color: '#64748b', padding: 16}}>No game log data</p>;
             
-            const edges = {
-                pts: calcEdge(player, 'pts'),
-                reb: calcEdge(player, 'reb'),
-                ast: calcEdge(player, 'ast'),
-                threes: calcEdge(player, 'threes'),
-            };
+            return (
+                <div style={{overflowX: 'auto'}}>
+                    <table className="game-log-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matchup</th>
+                                <th>MIN</th>
+                                <th className={highlightStat === 'pts' ? 'highlight' : ''}>PTS</th>
+                                <th className={highlightStat === 'reb' ? 'highlight' : ''}>REB</th>
+                                <th className={highlightStat === 'ast' ? 'highlight' : ''}>AST</th>
+                                <th className={highlightStat === 'fg3m' ? 'highlight' : ''}>3PM</th>
+                                <th>STL</th>
+                                <th>BLK</th>
+                                <th>TO</th>
+                                <th>PRA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {games.map((g, i) => (
+                                <tr key={i}>
+                                    <td className="date">{g.date?.split('T')[0]?.slice(5) || '-'}</td>
+                                    <td className="matchup">
+                                        <span className={g.wl === 'W' ? 'win' : 'loss'}>{g.wl}</span>
+                                        {' '}{g.matchup?.split(' ').slice(-1)[0] || '-'}
+                                    </td>
+                                    <td>{g.min}</td>
+                                    <td className={highlightStat === 'pts' ? 'highlight' : ''}><strong>{g.pts}</strong></td>
+                                    <td className={highlightStat === 'reb' ? 'highlight' : ''}><strong>{g.reb}</strong></td>
+                                    <td className={highlightStat === 'ast' ? 'highlight' : ''}><strong>{g.ast}</strong></td>
+                                    <td className={highlightStat === 'fg3m' ? 'highlight' : ''}><strong>{g.fg3m}</strong></td>
+                                    <td>{g.stl}</td>
+                                    <td>{g.blk}</td>
+                                    <td>{g.tov}</td>
+                                    <td style={{color: '#06b6d4'}}>{g.pra}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+        
+        function HitRatesView({ games }) {
+            const stats = ['pts', 'reb', 'ast', 'fg3m'];
+            const labels = { pts: 'Points', reb: 'Rebounds', ast: 'Assists', fg3m: '3-Pointers Made' };
             
-            const best = Object.entries(edges).reduce((b, [k,v]) => Math.abs(v.value) > Math.abs(b.value) ? {...v, type: k} : b, {value:0});
-            const hasEdge = Math.abs(best.value) >= 1.5 && best.confidence >= 50;
+            return (
+                <div className="hit-rates-grid">
+                    {stats.map(stat => {
+                        const rates = calcHitRates(games, stat);
+                        if (rates.length === 0) return null;
+                        
+                        return (
+                            <div key={stat}>
+                                <div className="section-title">{labels[stat]} Hit Rates (L{games?.length || 0})</div>
+                                {rates.map((r, i) => (
+                                    <div key={i} className="hit-rate-card" style={{marginBottom: 8}}>
+                                        <div className="hit-rate-header">
+                                            <span className="hit-rate-stat">O/U {r.line}</span>
+                                        </div>
+                                        <div className="hit-rate-bar">
+                                            <div className="hit-rate-fill" style={{width: `${r.pct}%`}}></div>
+                                        </div>
+                                        <div className="hit-rate-labels">
+                                            <span className="hit-rate-over">OVER: {r.over}/{r.total} ({r.pct}%)</span>
+                                            <span className="hit-rate-under">UNDER: {r.under}/{r.total}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
+        
+        function AveragesView({ player }) {
+            const { season, l5, l10 } = player;
+            if (!season) return null;
             
-            const propData = [
-                { key: 'pts', label: 'Points', line: player.props?.pts?.line, ...edges.pts },
-                { key: 'reb', label: 'Rebounds', line: player.props?.reb?.line, ...edges.reb },
-                { key: 'ast', label: 'Assists', line: player.props?.ast?.line, ...edges.ast },
-                { key: 'threes', label: '3-Pointers', line: player.props?.threes?.line, ...edges.threes },
+            const stats = [
+                { key: 'pts', label: 'Points' },
+                { key: 'reb', label: 'Rebounds' },
+                { key: 'ast', label: 'Assists' },
+                { key: 'fg3m', label: '3PM' },
+                { key: 'min', label: 'Minutes' },
             ];
             
             return (
-                <div className={`player-card ${hasEdge ? 'has-edge' : ''}`}>
+                <div className="averages-grid">
+                    <div className="avg-card">
+                        <div className="avg-card-title">Averages Comparison</div>
+                        <div style={{display: 'flex', justifyContent: 'flex-end', gap: 16, marginBottom: 8, fontSize: 11, color: '#64748b'}}>
+                            <span style={{minWidth: 45, textAlign: 'right'}}>Season</span>
+                            <span style={{minWidth: 45, textAlign: 'right'}}>L10</span>
+                            <span style={{minWidth: 45, textAlign: 'right'}}>L5</span>
+                        </div>
+                        {stats.map(s => {
+                            const szn = season[s.key] || 0;
+                            const last10 = l10?.[s.key] || 0;
+                            const last5 = l5?.[s.key] || 0;
+                            const l5vsSzn = szn > 0 ? ((last5 - szn) / szn * 100).toFixed(0) : 0;
+                            
+                            return (
+                                <div key={s.key} className="avg-row">
+                                    <span className="avg-stat">{s.label}</span>
+                                    <div className="avg-values">
+                                        <span className="avg-val season">{szn.toFixed(1)}</span>
+                                        <span className="avg-val l10">{last10.toFixed(1)}</span>
+                                        <span className="avg-val l5" style={{color: l5vsSzn > 10 ? '#22c55e' : l5vsSzn < -10 ? '#ef4444' : '#e2e8f0'}}>
+                                            {last5.toFixed(1)}
+                                            {Math.abs(l5vsSzn) >= 10 && <span style={{fontSize: 10, marginLeft: 4}}>({l5vsSzn > 0 ? '+' : ''}{l5vsSzn}%)</span>}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    
+                    <div className="avg-card">
+                        <div className="avg-card-title">Combo Props</div>
+                        <div style={{display: 'flex', justifyContent: 'flex-end', gap: 16, marginBottom: 8, fontSize: 11, color: '#64748b'}}>
+                            <span style={{minWidth: 45, textAlign: 'right'}}>L10</span>
+                            <span style={{minWidth: 45, textAlign: 'right'}}>L5</span>
+                        </div>
+                        {[
+                            { key: 'pra', label: 'PTS+REB+AST' },
+                            { key: 'pr', label: 'PTS+REB' },
+                            { key: 'pa', label: 'PTS+AST' },
+                            { key: 'ra', label: 'REB+AST' },
+                        ].map(s => (
+                            <div key={s.key} className="avg-row">
+                                <span className="avg-stat">{s.label}</span>
+                                <div className="avg-values">
+                                    <span className="avg-val l10">{(l10?.[s.key] || 0).toFixed(1)}</span>
+                                    <span className="avg-val l5">{(l5?.[s.key] || 0).toFixed(1)}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        
+        function TrendsView({ player }) {
+            const { trends } = player;
+            if (!trends) return null;
+            
+            const statLabels = { pts: 'Points', reb: 'Rebounds', ast: 'Assists', fg3m: '3-Pointers' };
+            
+            return (
+                <div className="trends-grid">
+                    {Object.entries(trends).map(([stat, data]) => {
+                        if (!data || !statLabels[stat]) return null;
+                        return (
+                            <div key={stat} className={`trend-card ${data.trend}`}>
+                                <div className="trend-stat">{statLabels[stat]}</div>
+                                <div className="trend-badge" style={{
+                                    display: 'inline-block',
+                                    padding: '2px 8px',
+                                    borderRadius: 4,
+                                    fontSize: 11,
+                                    marginBottom: 8,
+                                    background: data.trend === 'hot' ? 'rgba(34,197,94,0.2)' : data.trend === 'cold' ? 'rgba(239,68,68,0.2)' : 'rgba(100,116,139,0.2)',
+                                    color: data.trend === 'hot' ? '#22c55e' : data.trend === 'cold' ? '#ef4444' : '#94a3b8'
+                                }}>
+                                    {data.trend.toUpperCase()}
+                                </div>
+                                <div className="trend-note">{data.note}</div>
+                                <div className="trend-range">Range L10: {data.low_l10} - {data.high_l10}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
+        
+        function PlayerCard({ player, expanded, toggle }) {
+            const [tab, setTab] = useState('gamelog');
+            const team = TEAMS[player.team_id] || {};
+            const season = player.season || {};
+            const bestTrend = getBestTrend(player);
+            
+            return (
+                <div className={`player-card ${bestTrend.trend !== 'stable' ? bestTrend.trend : ''}`}>
                     <div className="player-header" onClick={toggle}>
                         <div className="player-info">
-                            <div className="player-avatar" style={{backgroundColor: team.color + '30', color: team.color}}>
-                                {player.name?.split(' ').map(n=>n[0]).join('')}
+                            <div className="player-avatar" style={{backgroundColor: (team.color || '#333') + '25', color: team.color || '#fff'}}>
+                                {player.name?.split(' ').map(n => n[0]).join('')}
                             </div>
                             <div>
                                 <div className="player-name">{player.name}</div>
-                                <div className="player-team" style={{color: team.color}}>{team.abbr}</div>
+                                <div className="player-team" style={{color: team.color}}>{team.abbr || player.team_abbr}</div>
                             </div>
                         </div>
                         
-                        <div className="player-stats">
-                            <div className="stat-box"><div className="stat-label">PTS</div><div className="stat-value">{s.pts?.toFixed(1)}</div></div>
-                            <div className="stat-box"><div className="stat-label">REB</div><div className="stat-value">{s.reb?.toFixed(1)}</div></div>
-                            <div className="stat-box"><div className="stat-label">AST</div><div className="stat-value">{s.ast?.toFixed(1)}</div></div>
+                        <div className="quick-stats">
+                            {[
+                                ['PTS', season.pts],
+                                ['REB', season.reb],
+                                ['AST', season.ast],
+                                ['3PM', season.fg3m],
+                                ['MIN', season.min],
+                            ].map(([label, val]) => (
+                                <div key={label} className="quick-stat">
+                                    <div className="quick-stat-label">{label}</div>
+                                    <div className="quick-stat-value">{val?.toFixed(1) || '-'}</div>
+                                </div>
+                            ))}
                         </div>
                         
-                        {hasEdge && (
-                            <div className={`edge-badge ${best.direction}`}>
-                                <div>
-                                    <div className="edge-type">{best.type?.toUpperCase()}</div>
-                                    <div className={`edge-pick ${best.direction}`}>{best.direction.toUpperCase()} {player.props?.[best.type]?.line}</div>
-                                </div>
-                                <div style={{textAlign:'right'}}>
-                                    <div className="edge-conf-label">Conf</div>
-                                    <div className="edge-conf-value">{best.confidence}%</div>
-                                </div>
+                        {bestTrend.stat && bestTrend.trend !== 'stable' && (
+                            <div className={`trend-badge ${bestTrend.trend}`}>
+                                {bestTrend.stat.toUpperCase()} {bestTrend.trend.toUpperCase()}
                             </div>
                         )}
                         
@@ -374,44 +651,35 @@
                     
                     {expanded && (
                         <div className="player-details">
-                            <div className="details-section">
-                                <div className="details-title">Props Analysis</div>
-                                <div className="props-grid">
-                                    {propData.map(p => {
-                                        const has = Math.abs(p.value) >= 1 && p.confidence >= 40;
-                                        return (
-                                            <div key={p.key} className={`prop-card ${has ? (p.direction === 'over' ? 'has-edge-over' : 'has-edge-under') : ''}`}>
-                                                <div className="prop-header">
-                                                    <span className="prop-label">{p.label}</span>
-                                                    {has && <span className={`prop-badge ${p.direction}`}>{p.direction.toUpperCase()}</span>}
-                                                </div>
-                                                <div className="prop-line">{p.line}</div>
-                                                {has && (
-                                                    <>
-                                                        <div className="prop-conf-bar">
-                                                            <div className={`prop-conf-fill ${p.direction}`} style={{width: `${p.confidence}%`}}></div>
-                                                        </div>
-                                                        <div className="prop-conf-text">{p.confidence}% confidence</div>
-                                                        {p.reasons?.map((r,i) => <div key={i} className="prop-reason">• {r}</div>)}
-                                                    </>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                            <div className="tabs">
+                                <div className={`tab ${tab === 'gamelog' ? 'active' : ''}`} onClick={() => setTab('gamelog')}>Game Log</div>
+                                <div className={`tab ${tab === 'hitrates' ? 'active' : ''}`} onClick={() => setTab('hitrates')}>Hit Rates</div>
+                                <div className={`tab ${tab === 'averages' ? 'active' : ''}`} onClick={() => setTab('averages')}>Averages</div>
+                                <div className={`tab ${tab === 'trends' ? 'active' : ''}`} onClick={() => setTab('trends')}>Trends</div>
                             </div>
                             
-                            <div className="details-section">
-                                <div className="details-title">Tracking Data</div>
-                                <div className="tracking-grid">
-                                    <div className="tracking-box"><div className="tracking-label">Touches</div><div className="tracking-value">{t.touches?.toFixed(1)}</div></div>
-                                    <div className="tracking-box"><div className="tracking-label">Passes</div><div className="tracking-value">{t.passes?.toFixed(1)}</div></div>
-                                    <div className="tracking-box highlight"><div className="tracking-label">Potential AST</div><div className="tracking-value">{t.potential_ast?.toFixed(1)}</div></div>
-                                    <div className="tracking-box highlight"><div className="tracking-label">REB Chances</div><div className="tracking-value">{t.reb_chances?.toFixed(1)}</div></div>
-                                    <div className="tracking-box"><div className="tracking-label">Contested</div><div className="tracking-value">{t.contested_shots?.toFixed(1)}</div></div>
-                                    <div className="tracking-box"><div className="tracking-label">Speed</div><div className="tracking-value">{t.speed?.toFixed(1)}</div></div>
+                            {tab === 'gamelog' && (
+                                <div className="game-log-section">
+                                    <div className="section-title">Last {player.game_log?.length || 0} Games</div>
+                                    <GameLogTable games={player.game_log} />
                                 </div>
-                            </div>
+                            )}
+                            
+                            {tab === 'hitrates' && (
+                                <div className="hit-rates-section">
+                                    <HitRatesView games={player.game_log} />
+                                </div>
+                            )}
+                            
+                            {tab === 'averages' && (
+                                <AveragesView player={player} />
+                            )}
+                            
+                            {tab === 'trends' && (
+                                <div className="trends-section">
+                                    <TrendsView player={player} />
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -425,11 +693,16 @@
             const [gameId, setGameId] = useState(null);
             const [expandedId, setExpandedId] = useState(null);
             const [search, setSearch] = useState('');
+            const [filter, setFilter] = useState('all'); // all, hot, cold
             
             useEffect(() => {
                 fetch(`${API}/api/dashboard`)
                     .then(r => r.json())
-                    .then(d => { setData(d); if(d.games?.length) setGameId(d.games[0].gameId); setLoading(false); })
+                    .then(d => {
+                        setData(d);
+                        if (d.games?.length) setGameId(d.games[0].gameId);
+                        setLoading(false);
+                    })
                     .catch(e => { setError(e.message); setLoading(false); });
             }, []);
             
@@ -437,23 +710,48 @@
                 if (!data || !gameId) return [];
                 const g = data.games?.find(x => x.gameId === gameId);
                 if (!g) return [];
-                let list = data.players?.filter(p => p.team === g.homeTeamId || p.team === g.awayTeamId) || [];
-                if (search) list = list.filter(p => p.name?.toLowerCase().includes(search.toLowerCase()));
-                return list.map(p => ({
+                
+                let list = data.players?.filter(p => p.team_id === g.homeTeamId || p.team_id === g.awayTeamId) || [];
+                
+                if (search) {
+                    list = list.filter(p => p.name?.toLowerCase().includes(search.toLowerCase()));
+                }
+                
+                // Add trend info
+                list = list.map(p => ({
                     ...p,
-                    maxEdge: Math.max(
-                        Math.abs(calcEdge(p,'pts').value),
-                        Math.abs(calcEdge(p,'reb').value),
-                        Math.abs(calcEdge(p,'ast').value),
-                        Math.abs(calcEdge(p,'threes').value)
-                    )
-                })).sort((a,b) => b.maxEdge - a.maxEdge);
-            }, [data, gameId, search]);
+                    bestTrend: getBestTrend(p)
+                }));
+                
+                if (filter === 'hot') {
+                    list = list.filter(p => p.bestTrend.trend === 'hot');
+                } else if (filter === 'cold') {
+                    list = list.filter(p => p.bestTrend.trend === 'cold');
+                }
+                
+                // Sort by minutes
+                return list.sort((a, b) => (b.season?.min || 0) - (a.season?.min || 0));
+            }, [data, gameId, search, filter]);
             
-            const game = data?.games?.find(g => g.gameId === gameId);
+            if (loading) {
+                return (
+                    <div className="loader">
+                        <div className="spinner"></div>
+                        <div className="loader-text">Loading NBA Props Lab v3...</div>
+                        <div style={{color: '#475569', fontSize: 12, marginTop: 8}}>Fetching game logs...</div>
+                    </div>
+                );
+            }
             
-            if (loading) return <div className="loader"><div className="spinner"></div><div className="loader-text">Loading NBA Props Lab...</div></div>;
-            if (error) return <div className="error"><div className="error-title">Connection Failed</div><div className="error-msg">{error}</div><button className="retry-btn" onClick={() => location.reload()}>Retry</button></div>;
+            if (error) {
+                return (
+                    <div className="error">
+                        <div className="error-title">Connection Failed</div>
+                        <div style={{color: '#64748b'}}>{error}</div>
+                        <button className="retry-btn" onClick={() => location.reload()}>Retry</button>
+                    </div>
+                );
+            }
             
             return (
                 <>
@@ -461,73 +759,79 @@
                         <div className="container header-content">
                             <div className="logo">
                                 <div className="logo-icon">🏀</div>
-                                <div className="logo-text">
+                                <div>
                                     <h1>NBA Props Lab</h1>
-                                    <p>Live Player Props Analytics</p>
+                                    <p>Game Logs • Hit Rates • Trends</p>
                                 </div>
                             </div>
                             <div className="live-badge">
                                 <div className="live-dot"></div>
-                                <span className="live-text">LIVE</span>
+                                <span>LIVE DATA</span>
                             </div>
                         </div>
                     </header>
                     
-                    <main className="container" style={{paddingTop: 24, paddingBottom: 24}}>
-                        {data?.games?.length > 0 ? (
-                            <>
-                                <div className="games-section">
-                                    <div className="section-title">Today's Games</div>
-                                    <div className="games-row">
-                                        {data.games.map(g => {
-                                            const home = TEAMS[g.homeTeamId];
-                                            const away = TEAMS[g.awayTeamId];
-                                            return (
-                                                <div key={g.gameId} className={`game-card ${gameId === g.gameId ? 'selected' : ''}`} onClick={() => setGameId(g.gameId)}>
-                                                    <div className="game-teams">
-                                                        <span className="game-team" style={{color: away?.color}}>{away?.abbr}</span>
-                                                        <span className="game-at">@</span>
-                                                        <span className="game-team" style={{color: home?.color}}>{home?.abbr}</span>
-                                                    </div>
-                                                    <div className="game-time">{g.gameTime}</div>
+                    {data?.games?.length > 0 && (
+                        <div className="games-section">
+                            <div className="container">
+                                <div className="games-row">
+                                    {data.games.map(g => {
+                                        const home = TEAMS[g.homeTeamId] || {};
+                                        const away = TEAMS[g.awayTeamId] || {};
+                                        return (
+                                            <div 
+                                                key={g.gameId} 
+                                                className={`game-card ${gameId === g.gameId ? 'selected' : ''}`}
+                                                onClick={() => setGameId(g.gameId)}
+                                            >
+                                                <div className="game-teams">
+                                                    <span style={{color: away.color}}>{away.abbr}</span>
+                                                    <span className="game-at">@</span>
+                                                    <span style={{color: home.color}}>{home.abbr}</span>
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
+                                                <div className="game-time">{g.gameTime}</div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                
-                                <input className="search-box" type="text" placeholder="Search players..." value={search} onChange={e => setSearch(e.target.value)} />
-                                
-                                {game && (
-                                    <div className="matchup-header">
-                                        <div className="matchup-teams">
-                                            <div>
-                                                <div className="matchup-team-name" style={{color: TEAMS[game.awayTeamId]?.color}}>{TEAMS[game.awayTeamId]?.abbr}</div>
-                                                <div className="matchup-team-city">{TEAMS[game.awayTeamId]?.name}</div>
-                                            </div>
-                                            <div>
-                                                <div className="matchup-vs">@</div>
-                                                <div className="matchup-time">{game.gameTime}</div>
-                                            </div>
-                                            <div>
-                                                <div className="matchup-team-name" style={{color: TEAMS[game.homeTeamId]?.color}}>{TEAMS[game.homeTeamId]?.abbr}</div>
-                                                <div className="matchup-team-city">{TEAMS[game.homeTeamId]?.name}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                
-                                {players.map(p => (
-                                    <PlayerCard key={p.id} player={p} expanded={expandedId === p.id} toggle={() => setExpandedId(expandedId === p.id ? null : p.id)} />
-                                ))}
-                            </>
+                            </div>
+                        </div>
+                    )}
+                    
+                    <main className="container" style={{paddingTop: 16, paddingBottom: 24}}>
+                        <div className="controls">
+                            <input 
+                                className="search-box" 
+                                type="text" 
+                                placeholder="Search players..." 
+                                value={search} 
+                                onChange={e => setSearch(e.target.value)} 
+                            />
+                            <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All</button>
+                            <button className={`filter-btn ${filter === 'hot' ? 'active' : ''}`} onClick={() => setFilter('hot')}>🔥 Hot</button>
+                            <button className={`filter-btn ${filter === 'cold' ? 'active' : ''}`} onClick={() => setFilter('cold')}>❄️ Cold</button>
+                        </div>
+                        
+                        {players.length > 0 ? (
+                            players.map(p => (
+                                <PlayerCard 
+                                    key={p.id} 
+                                    player={p} 
+                                    expanded={expandedId === p.id}
+                                    toggle={() => setExpandedId(expandedId === p.id ? null : p.id)}
+                                />
+                            ))
                         ) : (
-                            <div className="no-games">No games scheduled today</div>
+                            <div className="no-games">
+                                {filter !== 'all' ? `No ${filter} players found` : 'No players found'}
+                            </div>
                         )}
                     </main>
                     
                     <footer className="footer">
-                        <div className="container">NBA.com Stats API • 2025-26 Season</div>
+                        <div className="container">
+                            NBA.com Stats API • {new Date().toLocaleDateString()}
+                        </div>
                     </footer>
                 </>
             );
