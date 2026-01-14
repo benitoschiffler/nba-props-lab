@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Props Lab</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .header {
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .header-content { display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+        }
+        .logo-text h1 {
+            font-size: 20px; font-weight: 700;
+            background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .logo-text p { font-size: 11px; color: #64748b; }
+        .live-badge {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 12px; border-radius: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .live-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .live-text { font-size: 12px; color: #10b981; font-weight: 600; }
+        
+        .games-section { margin: 24px 0; }
+        .section-title { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .games-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+        .game-card {
+            flex-shrink: 0;
+            padding: 16px 20px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .game-card:hover { border-color: rgba(51, 65, 85, 0.8); }
+        .game-card.selected { background: rgba(30, 41, 59, 0.8); border-color: rgba(6, 182, 212, 0.5); }
+        .game-teams { display: flex; align-items: center; gap: 16px; }
+        .game-team { font-size: 18px; font-weight: 700; }
+        .game-at { color: #475569; }
+        .game-time { font-size: 11px; color: #64748b; margin-top: 8px; }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .search-box:focus { outline: none; border-color: rgba(6, 182, 212, 0.5); }
+        .search-box::placeholder { color: #64748b; }
+        
+        .matchup-header {
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .matchup-teams { display: flex; align-items: center; justify-content: center; gap: 32px; }
+        .matchup-team-name { font-size: 28px; font-weight: 800; }
+        .matchup-team-city { font-size: 11px; color: #64748b; margin-top: 4px; }
+        .matchup-vs { font-size: 24px; color: #475569; }
+        .matchup-time { font-size: 11px; color: #64748b; margin-top: 4px; }
+        
+        .player-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .player-card.has-edge {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.7));
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        .player-header {
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+        }
+        .player-info { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+        .player-avatar {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 16px;
+        }
+        .player-name { font-weight: 700; font-size: 16px; }
+        .player-team { font-size: 13px; }
+        .player-stats { display: flex; gap: 8px; }
+        .stat-box {
+            padding: 6px 12px;
+            background: rgba(51, 65, 85, 0.4);
+            border-radius: 8px;
+            text-align: center;
+            min-width: 50px;
+        }
+        .stat-label { font-size: 10px; color: #64748b; }
+        .stat-value { font-weight: 700; font-size: 14px; }
+        .edge-badge {
+            margin-left: auto;
+            padding: 10px 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .edge-badge.over { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .edge-badge.under { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .edge-type { font-size: 11px; color: #94a3b8; }
+        .edge-pick { font-weight: 700; font-size: 15px; }
+        .edge-pick.over { color: #10b981; }
+        .edge-pick.under { color: #ef4444; }
+        .edge-conf-label { font-size: 11px; color: #94a3b8; }
+        .edge-conf-value { font-weight: 700; }
+        .expand-btn { padding: 8px; color: #64748b; font-size: 18px; }
+        
+        .player-details {
+            padding: 16px;
+            border-top: 1px solid rgba(51, 65, 85, 0.5);
+            background: rgba(15, 23, 42, 0.3);
+        }
+        .details-section { margin-bottom: 20px; }
+        .details-title { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .props-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+        .prop-card {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            background: rgba(30, 41, 59, 0.3);
+        }
+        .prop-card.has-edge-over { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3); }
+        .prop-card.has-edge-under { background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.3); }
+        .prop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .prop-label { font-size: 13px; color: #94a3b8; }
+        .prop-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+        .prop-badge.over { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .prop-badge.under { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .prop-line { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .prop-conf-bar { height: 6px; background: rgba(51, 65, 85, 0.5); border-radius: 3px; margin-bottom: 4px; }
+        .prop-conf-fill { height: 100%; border-radius: 3px; }
+        .prop-conf-fill.over { background: #10b981; }
+        .prop-conf-fill.under { background: #ef4444; }
+        .prop-conf-text { font-size: 11px; color: #64748b; text-align: right; }
+        .prop-reason { font-size: 11px; color: #64748b; margin-top: 6px; }
+        
+        .tracking-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+        .tracking-box {
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 8px;
+        }
+        .tracking-box.highlight { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); }
+        .tracking-label { font-size: 10px; color: #64748b; margin-bottom: 4px; }
+        .tracking-value { font-size: 18px; font-weight: 700; }
+        
+        .loader {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 60vh;
+        }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(6, 182, 212, 0.2);
+            border-top-color: #06b6d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-text { margin-top: 16px; color: #64748b; }
+        
+        .error { text-align: center; padding: 48px; }
+        .error-title { color: #ef4444; font-size: 20px; margin-bottom: 8px; }
+        .error-msg { color: #64748b; margin-bottom: 16px; }
+        .retry-btn {
+            padding: 10px 20px;
+            background: rgba(6, 182, 212, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: #06b6d4;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .footer {
+            border-top: 1px solid rgba(51, 65, 85, 0.5);
+            padding: 16px 0;
+            margin-top: 48px;
+            text-align: center;
+            font-size: 11px;
+            color: #475569;
+        }
+        
+        .no-games { text-align: center; padding: 48px; color: #64748b; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        
+        const API = 'https://nba-props-lab-production.up.railway.app';
+        
+        const TEAMS = {
+            1610612737: { abbr: 'ATL', name: 'Hawks', color: '#E03A3E' },
+            1610612738: { abbr: 'BOS', name: 'Celtics', color: '#007A33' },
+            1610612751: { abbr: 'BKN', name: 'Nets', color: '#333333' },
+            1610612766: { abbr: 'CHA', name: 'Hornets', color: '#1D1160' },
+            1610612741: { abbr: 'CHI', name: 'Bulls', color: '#CE1141' },
+            1610612739: { abbr: 'CLE', name: 'Cavaliers', color: '#860038' },
+            1610612742: { abbr: 'DAL', name: 'Mavericks', color: '#00538C' },
+            1610612743: { abbr: 'DEN', name: 'Nuggets', color: '#0E2240' },
+            1610612765: { abbr: 'DET', name: 'Pistons', color: '#C8102E' },
+            1610612744: { abbr: 'GSW', name: 'Warriors', color: '#1D428A' },
+            1610612745: { abbr: 'HOU', name: 'Rockets', color: '#CE1141' },
+            1610612754: { abbr: 'IND', name: 'Pacers', color: '#002D62' },
+            1610612746: { abbr: 'LAC', name: 'Clippers', color: '#C8102E' },
+            1610612747: { abbr: 'LAL', name: 'Lakers', color: '#552583' },
+            1610612763: { abbr: 'MEM', name: 'Grizzlies', color: '#5D76A9' },
+            1610612748: { abbr: 'MIA', name: 'Heat', color: '#98002E' },
+            1610612749: { abbr: 'MIL', name: 'Bucks', color: '#00471B' },
+            1610612750: { abbr: 'MIN', name: 'Timberwolves', color: '#0C2340' },
+            1610612740: { abbr: 'NOP', name: 'Pelicans', color: '#0C2340' },
+            1610612752: { abbr: 'NYK', name: 'Knicks', color: '#006BB6' },
+            1610612760: { abbr: 'OKC', name: 'Thunder', color: '#007AC1' },
+            1610612753: { abbr: 'ORL', name: 'Magic', color: '#0077C0' },
+            1610612755: { abbr: 'PHI', name: 'Sixers', color: '#006BB6' },
+            1610612756: { abbr: 'PHX', name: 'Suns', color: '#1D1160' },
+            1610612757: { abbr: 'POR', name: 'Blazers', color: '#E03A3E' },
+            1610612758: { abbr: 'SAC', name: 'Kings', color: '#5A2D81' },
+            1610612759: { abbr: 'SAS', name: 'Spurs', color: '#C4CED4' },
+            1610612761: { abbr: 'TOR', name: 'Raptors', color: '#CE1141' },
+            1610612762: { abbr: 'UTA', name: 'Jazz', color: '#002B5C' },
+            1610612764: { abbr: 'WAS', name: 'Wizards', color: '#002B5C' },
+        };
+        
+        const calcEdge = (p, type) => {
+            const t = p.tracking || {};
+            const props = p.props || {};
+            const s = p.stats || {};
+            const l5 = p.last5 || [];
+            const prop = props[type];
+            if (!prop) return { value: 0, confidence: 0, direction: 'neutral', reasons: [] };
+            
+            let e = { value: 0, confidence: 0, direction: 'neutral', reasons: [] };
+            
+            if (type === 'pts') {
+                const avg = l5.length ? l5.reduce((a,b) => a + (b.pts||0), 0) / l5.length : s.pts;
+                const diff = avg - prop.line;
+                if (diff > 1.5) { e.value = 2; e.direction = 'over'; e.reasons.push(`Hot: ${avg.toFixed(1)} vs ${prop.line}`); }
+                else if (diff < -1.5) { e.value = -1.5; e.direction = 'under'; e.reasons.push(`Cold: ${avg.toFixed(1)} vs ${prop.line}`); }
+                e.confidence = Math.min(Math.abs(e.value) * 12, 75);
+            }
+            if (type === 'reb') {
+                const avg = l5.length ? l5.reduce((a,b) => a + (b.reb||0), 0) / l5.length : s.reb;
+                const diff = avg - prop.line;
+                if (diff > 0.5) { e.value = 1.5; e.direction = 'over'; e.reasons.push(`L5: ${avg.toFixed(1)} > ${prop.line}`); }
+                else if (diff < -0.5) { e.value = -1.5; e.direction = 'under'; e.reasons.push(`L5: ${avg.toFixed(1)} < ${prop.line}`); }
+                e.confidence = Math.min(Math.abs(e.value) * 15, 80);
+            }
+            if (type === 'ast') {
+                const avg = l5.length ? l5.reduce((a,b) => a + (b.ast||0), 0) / l5.length : s.ast;
+                const diff = avg - prop.line;
+                if (diff > 0.5) { e.value = 1.5; e.direction = 'over'; e.reasons.push(`L5: ${avg.toFixed(1)} > ${prop.line}`); }
+                else if (diff < -0.5) { e.value = -1.5; e.direction = 'under'; e.reasons.push(`L5: ${avg.toFixed(1)} < ${prop.line}`); }
+                e.confidence = Math.min(Math.abs(e.value) * 15, 85);
+            }
+            if (type === 'threes') {
+                const pct = s.fg3_pct || 0.33;
+                if (pct > 0.40) { e.value = 1.5; e.direction = 'over'; e.reasons.push(`Elite: ${(pct*100).toFixed(1)}%`); }
+                else if (pct < 0.32) { e.value = -1; e.direction = 'under'; }
+                e.confidence = Math.min(Math.abs(e.value) * 18, 70);
+            }
+            
+            if (e.value > 0 && e.direction === 'neutral') e.direction = 'over';
+            if (e.value < 0 && e.direction === 'neutral') e.direction = 'under';
+            return e;
+        };
+        
+        function PlayerCard({ player, expanded, toggle }) {
+            const team = TEAMS[player.team] || {};
+            const s = player.stats || {};
+            const t = player.tracking || {};
+            
+            const edges = {
+                pts: calcEdge(player, 'pts'),
+                reb: calcEdge(player, 'reb'),
+                ast: calcEdge(player, 'ast'),
+                threes: calcEdge(player, 'threes'),
+            };
+            
+            const best = Object.entries(edges).reduce((b, [k,v]) => Math.abs(v.value) > Math.abs(b.value) ? {...v, type: k} : b, {value:0});
+            const hasEdge = Math.abs(best.value) >= 1.5 && best.confidence >= 50;
+            
+            const propData = [
+                { key: 'pts', label: 'Points', line: player.props?.pts?.line, ...edges.pts },
+                { key: 'reb', label: 'Rebounds', line: player.props?.reb?.line, ...edges.reb },
+                { key: 'ast', label: 'Assists', line: player.props?.ast?.line, ...edges.ast },
+                { key: 'threes', label: '3-Pointers', line: player.props?.threes?.line, ...edges.threes },
+            ];
+            
+            return (
+                <div className={`player-card ${hasEdge ? 'has-edge' : ''}`}>
+                    <div className="player-header" onClick={toggle}>
+                        <div className="player-info">
+                            <div className="player-avatar" style={{backgroundColor: team.color + '30', color: team.color}}>
+                                {player.name?.split(' ').map(n=>n[0]).join('')}
+                            </div>
+                            <div>
+                                <div className="player-name">{player.name}</div>
+                                <div className="player-team" style={{color: team.color}}>{team.abbr}</div>
+                            </div>
+                        </div>
+                        
+                        <div className="player-stats">
+                            <div className="stat-box"><div className="stat-label">PTS</div><div className="stat-value">{s.pts?.toFixed(1)}</div></div>
+                            <div className="stat-box"><div className="stat-label">REB</div><div className="stat-value">{s.reb?.toFixed(1)}</div></div>
+                            <div className="stat-box"><div className="stat-label">AST</div><div className="stat-value">{s.ast?.toFixed(1)}</div></div>
+                        </div>
+                        
+                        {hasEdge && (
+                            <div className={`edge-badge ${best.direction}`}>
+                                <div>
+                                    <div className="edge-type">{best.type?.toUpperCase()}</div>
+                                    <div className={`edge-pick ${best.direction}`}>{best.direction.toUpperCase()} {player.props?.[best.type]?.line}</div>
+                                </div>
+                                <div style={{textAlign:'right'}}>
+                                    <div className="edge-conf-label">Conf</div>
+                                    <div className="edge-conf-value">{best.confidence}%</div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="expand-btn">{expanded ? '▲' : '▼'}</div>
+                    </div>
+                    
+                    {expanded && (
+                        <div className="player-details">
+                            <div className="details-section">
+                                <div className="details-title">Props Analysis</div>
+                                <div className="props-grid">
+                                    {propData.map(p => {
+                                        const has = Math.abs(p.value) >= 1 && p.confidence >= 40;
+                                        return (
+                                            <div key={p.key} className={`prop-card ${has ? (p.direction === 'over' ? 'has-edge-over' : 'has-edge-under') : ''}`}>
+                                                <div className="prop-header">
+                                                    <span className="prop-label">{p.label}</span>
+                                                    {has && <span className={`prop-badge ${p.direction}`}>{p.direction.toUpperCase()}</span>}
+                                                </div>
+                                                <div className="prop-line">{p.line}</div>
+                                                {has && (
+                                                    <>
+                                                        <div className="prop-conf-bar">
+                                                            <div className={`prop-conf-fill ${p.direction}`} style={{width: `${p.confidence}%`}}></div>
+                                                        </div>
+                                                        <div className="prop-conf-text">{p.confidence}% confidence</div>
+                                                        {p.reasons?.map((r,i) => <div key={i} className="prop-reason">• {r}</div>)}
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            
+                            <div className="details-section">
+                                <div className="details-title">Tracking Data</div>
+                                <div className="tracking-grid">
+                                    <div className="tracking-box"><div className="tracking-label">Touches</div><div className="tracking-value">{t.touches?.toFixed(1)}</div></div>
+                                    <div className="tracking-box"><div className="tracking-label">Passes</div><div className="tracking-value">{t.passes?.toFixed(1)}</div></div>
+                                    <div className="tracking-box highlight"><div className="tracking-label">Potential AST</div><div className="tracking-value">{t.potential_ast?.toFixed(1)}</div></div>
+                                    <div className="tracking-box highlight"><div className="tracking-label">REB Chances</div><div className="tracking-value">{t.reb_chances?.toFixed(1)}</div></div>
+                                    <div className="tracking-box"><div className="tracking-label">Contested</div><div className="tracking-value">{t.contested_shots?.toFixed(1)}</div></div>
+                                    <div className="tracking-box"><div className="tracking-label">Speed</div><div className="tracking-value">{t.speed?.toFixed(1)}</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+        
+        function App() {
+            const [data, setData] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [gameId, setGameId] = useState(null);
+            const [expandedId, setExpandedId] = useState(null);
+            const [search, setSearch] = useState('');
+            
+            useEffect(() => {
+                fetch(`${API}/api/dashboard`)
+                    .then(r => r.json())
+                    .then(d => { setData(d); if(d.games?.length) setGameId(d.games[0].gameId); setLoading(false); })
+                    .catch(e => { setError(e.message); setLoading(false); });
+            }, []);
+            
+            const players = useMemo(() => {
+                if (!data || !gameId) return [];
+                const g = data.games?.find(x => x.gameId === gameId);
+                if (!g) return [];
+                let list = data.players?.filter(p => p.team === g.homeTeamId || p.team === g.awayTeamId) || [];
+                if (search) list = list.filter(p => p.name?.toLowerCase().includes(search.toLowerCase()));
+                return list.map(p => ({
+                    ...p,
+                    maxEdge: Math.max(
+                        Math.abs(calcEdge(p,'pts').value),
+                        Math.abs(calcEdge(p,'reb').value),
+                        Math.abs(calcEdge(p,'ast').value),
+                        Math.abs(calcEdge(p,'threes').value)
+                    )
+                })).sort((a,b) => b.maxEdge - a.maxEdge);
+            }, [data, gameId, search]);
+            
+            const game = data?.games?.find(g => g.gameId === gameId);
+            
+            if (loading) return <div className="loader"><div className="spinner"></div><div className="loader-text">Loading NBA Props Lab...</div></div>;
+            if (error) return <div className="error"><div className="error-title">Connection Failed</div><div className="error-msg">{error}</div><button className="retry-btn" onClick={() => location.reload()}>Retry</button></div>;
+            
+            return (
+                <>
+                    <header className="header">
+                        <div className="container header-content">
+                            <div className="logo">
+                                <div className="logo-icon">🏀</div>
+                                <div className="logo-text">
+                                    <h1>NBA Props Lab</h1>
+                                    <p>Live Player Props Analytics</p>
+                                </div>
+                            </div>
+                            <div className="live-badge">
+                                <div className="live-dot"></div>
+                                <span className="live-text">LIVE</span>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <main className="container" style={{paddingTop: 24, paddingBottom: 24}}>
+                        {data?.games?.length > 0 ? (
+                            <>
+                                <div className="games-section">
+                                    <div className="section-title">Today's Games</div>
+                                    <div className="games-row">
+                                        {data.games.map(g => {
+                                            const home = TEAMS[g.homeTeamId];
+                                            const away = TEAMS[g.awayTeamId];
+                                            return (
+                                                <div key={g.gameId} className={`game-card ${gameId === g.gameId ? 'selected' : ''}`} onClick={() => setGameId(g.gameId)}>
+                                                    <div className="game-teams">
+                                                        <span className="game-team" style={{color: away?.color}}>{away?.abbr}</span>
+                                                        <span className="game-at">@</span>
+                                                        <span className="game-team" style={{color: home?.color}}>{home?.abbr}</span>
+                                                    </div>
+                                                    <div className="game-time">{g.gameTime}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                
+                                <input className="search-box" type="text" placeholder="Search players..." value={search} onChange={e => setSearch(e.target.value)} />
+                                
+                                {game && (
+                                    <div className="matchup-header">
+                                        <div className="matchup-teams">
+                                            <div>
+                                                <div className="matchup-team-name" style={{color: TEAMS[game.awayTeamId]?.color}}>{TEAMS[game.awayTeamId]?.abbr}</div>
+                                                <div className="matchup-team-city">{TEAMS[game.awayTeamId]?.name}</div>
+                                            </div>
+                                            <div>
+                                                <div className="matchup-vs">@</div>
+                                                <div className="matchup-time">{game.gameTime}</div>
+                                            </div>
+                                            <div>
+                                                <div className="matchup-team-name" style={{color: TEAMS[game.homeTeamId]?.color}}>{TEAMS[game.homeTeamId]?.abbr}</div>
+                                                <div className="matchup-team-city">{TEAMS[game.homeTeamId]?.name}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {players.map(p => (
+                                    <PlayerCard key={p.id} player={p} expanded={expandedId === p.id} toggle={() => setExpandedId(expandedId === p.id ? null : p.id)} />
+                                ))}
+                            </>
+                        ) : (
+                            <div className="no-games">No games scheduled today</div>
+                        )}
+                    </main>
+                    
+                    <footer className="footer">
+                        <div className="container">NBA.com Stats API • 2025-26 Season</div>
+                    </footer>
+                </>
+            );
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
